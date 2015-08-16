@@ -6,16 +6,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Permissions required by the sync adapter -->
-    <uses-permission
-        android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/art_clear"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
@@ -30,16 +27,17 @@
 
         <!-- Deb->> Entries for content provider -->
         <provider
-            android:authorities="@string/content_authority"
             android:name=".data.DebProvider"
+            android:authorities="@string/content_authority"
             android:exported="false"
             android:syncable="true" />
 
         <!-- Deb->> SyncAdapter's dummy authentication service -->
-        <service android:name=".sync.DebAuthenticatorService">
+        <service android:name=".sync.DebAuthenticatorService" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
@@ -48,15 +46,20 @@
         <!-- Deb->> SyncAdapter service -->
         <service
             android:name=".sync.DebSyncService"
-            android:exported="true"
-            >
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>

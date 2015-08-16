@@ -258,6 +258,7 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 // Cheating to convert this to UTC time, which is what we want anyhow
                 dateTime = dayTime.setJulianDay(julianStartDay+i);
+                Log.d(LOG_TAG,"DebSyncAdapter --> date value being inserted in database: " + Long.toString(dateTime));
 
                 pressure = dayForecast.getDouble(OWM_PRESSURE);
                 humidity = dayForecast.getInt(OWM_HUMIDITY);
@@ -292,23 +293,32 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 cVVector.add(weatherValues);
             }
+            //Delete records from table for the location before inserting to table to avoid duplicates
+            Uri weatherLocationDelUri = DebContract.DebWeatherFields.CONTENT_URI;
+            int delRows = getContext().getContentResolver().delete(weatherLocationDelUri,DebContract.DebWeatherFields.COLUMN_CITY + "= ?",
+                    new String[]{cityName});
+            Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records deleted from location "+cityName+" = " +delRows);
 
-            int inserted = 0;
+            int insertCount = 0;
+            int delCount = 0;
             // add to database
             if ( cVVector.size() > 0 ) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
-                getContext().getContentResolver().bulkInsert(DebContract.DebWeatherFields.CONTENT_URI, cvArray);
+                insertCount = getContext().getContentResolver().bulkInsert(DebContract.DebWeatherFields.CONTENT_URI, cvArray);
 
                 // delete old data so we don't build up an endless history
-                getContext().getContentResolver().delete(DebContract.DebWeatherFields.CONTENT_URI,
+                delCount = getContext().getContentResolver().delete(DebContract.DebWeatherFields.CONTENT_URI,
                         DebContract.DebWeatherFields.COLUMN_DATE + " <= ?",
                         new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
 
+                //notify that the weather data has been changed
                 notifyWeather();
             }
 
-            Log.d(LOG_TAG, "DebSyncAdapter -->Sync Complete. " + cVVector.size() + " Inserted");
+            Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records received from server: " + cVVector.size());
+            Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records deleted from database: " + insertCount);
+            Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records deleted from database: " + delCount);
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

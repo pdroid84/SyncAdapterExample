@@ -4,5 +4,5 @@
     android:name="com.pdroid84.deb.syncadapterexample.DebListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.sunshine.app.ForecastFragment"
+    tools:context="com.pdroid84.deb.syncadapterexample.DebListFragment"
     tools:layout="@android:layout/list_content" />

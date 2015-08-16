@@ -34,6 +34,7 @@ public class DebAdapter extends CursorAdapter {
         public final TextView lowTempView;
 
         public ViewHolder(View view) {
+            Log.d("DEB","DebAdapter ---> ViewHolder is called");
             iconView = (ImageView) view.findViewById(R.id.list_item_icon);
             dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
             descriptionView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
@@ -49,6 +50,7 @@ public class DebAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+        Log.d("DEB","DebAdapter ---> newView is called");
         //get the view type to be used (today or future)
         int viewType = getItemViewType(cursor.getPosition());
         int layoutId = -1;
@@ -74,6 +76,7 @@ public class DebAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        Log.d("DEB","DebAdapter ---> bindView is called");
 
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
@@ -95,11 +98,14 @@ public class DebAdapter extends CursorAdapter {
 
         // Read date from cursor
         long dateInMillis = cursor.getLong(DebListFragment.COL_WEATHER_DATE);
+        Log.d("DEB","DebAdapter ---> date value as in database: " + Long.toString(dateInMillis));
+
         // Find TextView and set formatted date on it
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
 
         // Read weather forecast from cursor
         String description = cursor.getString(DebListFragment.COL_WEATHER_DESC);
+
         // Find TextView and set weather forecast on it
         viewHolder.descriptionView.setText(description);
 

@@ -92,7 +92,7 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
         String locationSetting = "Newcastle";
         Uri weatherForLocationUri = DebContract.DebWeatherFields.buildWeatherLocationWithStartDate(
                 locationSetting, System.currentTimeMillis());
-
+        Log.d("DEB", "DebListFragment ---> weatherForLocationUri: "+ weatherForLocationUri.toString());
         return new CursorLoader(
                 getActivity(),
                 weatherForLocationUri,

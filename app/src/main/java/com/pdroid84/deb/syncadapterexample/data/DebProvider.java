@@ -215,6 +215,7 @@ public class DebProvider extends ContentProvider {
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
+        Log.d("DEB",DebProvider.class.getName() + "->rows deleted: " + rowsDeleted);
         return rowsDeleted;
     }
 
