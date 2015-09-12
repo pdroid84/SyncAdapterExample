@@ -8,6 +8,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("DEB", "SettingsFragment->onCreate is called");
         // Add 'general' preferences, defined in the XML file
         addPreferencesFromResource(R.xml.preferences);
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
@@ -33,6 +35,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
      * is changed.)
      */
     private void bindPreferenceSummaryToValue(Preference preference) {
+        Log.d("DEB", "SettingsFragment->bindPreferencSummary is called");
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
 
@@ -46,6 +49,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object value) {
+        Log.d("DEB", "SettingsFragment->onPreferenceSummary is called");
         String stringValue = value.toString();
 
         if (preference instanceof ListPreference) {
