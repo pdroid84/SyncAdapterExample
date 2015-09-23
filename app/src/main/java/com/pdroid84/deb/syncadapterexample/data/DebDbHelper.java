@@ -8,6 +8,7 @@ import android.util.Log;
 import com.pdroid84.deb.syncadapterexample.data.DebContract.DebWeatherFields;
 /**
  * Created by pdroid84 on 27/06/15.
+ * Define the Database schema and upgrade (drop) strategy
  */
 public class DebDbHelper extends SQLiteOpenHelper {
 

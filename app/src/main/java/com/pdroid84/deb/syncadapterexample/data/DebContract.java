@@ -11,7 +11,9 @@ import android.provider.BaseColumns;
 import android.text.format.Time;
 
 /**
+ * Define the Authority and related parameters
  * Defines table and column names for the weather database.
+ * Define functions to create URIs and parse URI data
  */
 public class DebContract {
 
@@ -26,7 +28,7 @@ public class DebContract {
     public static final String PATH_WEATHER = "weather";
 
 
-    // To make it easy to query for the exact date, we normalize all dates that go into
+    // To make it easy to query for the exact date, normalize all dates that go into
     // the database to the start of the the Julian day at UTC.
     public static long normalizeDate(long startDate) {
         // normalize the start date to the beginning of the (UTC) day
@@ -36,7 +38,7 @@ public class DebContract {
         return time.setJulianDay(julianDay);
     }
 
-    // Extend BaseColumns which ensure _ID field is autometically added to the class DebWeatherFields
+    // Extend BaseColumns which ensure _ID field is automatically added to the class DebWeatherFields
     //Define all the fields and URI
     public static final class DebWeatherFields implements BaseColumns {
 
@@ -77,39 +79,46 @@ public class DebContract {
         // Humidity is stored as a float representing percentage
         public static final String COLUMN_PRESSURE = "pressure";
 
-        // Windspeed is stored as a float representing windspeed  mph
+        // Wind speed is stored as a float representing windspeed  mph
         public static final String COLUMN_WIND_SPEED = "wind";
 
         // Degrees are meteorological degrees (e.g, 0 is north, 180 is south).  Stored as floats.
         public static final String COLUMN_DEGREES = "degrees";
 
+        //Build the URI with Location (City) and Start Date
         public static Uri buildWeatherLocationWithStartDate(String locationSetting, long startDate) {
             long normalizedDate = normalizeDate(startDate);
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
                     .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
         }
 
+        //Build the URI with Location (City)
         public static Uri buildWeatherLocationWithCity(String locationSetting) {
             return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
         }
 
+        //Build the URI with Start Date
         public static Uri buildWeatherLocationWithDate(String locationSetting, long date) {
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
                     .appendPath(Long.toString(normalizeDate(date))).build();
         }
 
+        //Build the URI with ID
         public static Uri buildWeatherUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        //Retrieve the Location (City) from the URI
         public static String getCityFromUri(Uri uri) {
             return uri.getPathSegments().get(1);
         }
 
+        //Retrieve the Date from the URI
         public static long getDateFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
+        //Retrieve the Start Date from the URI
         public static long getStartDateFromUri(Uri uri) {
             String dateString = uri.getQueryParameter(COLUMN_DATE);
             if (null != dateString && dateString.length() > 0)

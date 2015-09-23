@@ -65,7 +65,7 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
             DebContract.DebWeatherFields.COLUMN_SHORT_DESC
     };
 
-    // these indices must match the projection
+    // These indices must match the projection
     private static final int INDEX_WEATHER_ID = 0;
     private static final int INDEX_MAX_TEMP = 1;
     private static final int INDEX_MIN_TEMP = 2;
@@ -89,14 +89,16 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
         // Will contain the raw JSON response as a string.
         String forecastJsonStr = null;
 
-        String location = "Newcastle";
+        //String location = "Newcastle";
+        //Location (City) is now read from SharedPreference
+        String location = Utility.getPreferredLocation(getContext());
         String format = "json";
         String units = "metric";
         int numDays = 14;
 
         try {
             // Construct the URL for the OpenWeatherMap query
-            // format is "http://api.openweathermap.org/data/2.5/forecast/daily?q=Newcastle&mode=json&units=metric&cnt=14"
+            // format is "http://api.openweathermap.org/data/2.5/forecast/daily?q=CityName&mode=json&units=metric&cnt=14"
             final String FORECAST_BASE_URL =
                     "http://api.openweathermap.org/data/2.5/forecast/daily?";
             final String QUERY_PARAM = "q";

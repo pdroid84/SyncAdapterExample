@@ -22,7 +22,6 @@ public class DebAdapter extends CursorAdapter {
     // Flag to determine if we want to use a separate view for "today".
     private boolean mUseTodayLayout = true;
 
-
     /**
      * Cache of the children views for a forecast list item.
      */
@@ -32,6 +31,7 @@ public class DebAdapter extends CursorAdapter {
         public final TextView descriptionView;
         public final TextView highTempView;
         public final TextView lowTempView;
+        public final TextView locationView;
 
         public ViewHolder(View view) {
             Log.d("DEB","DebAdapter ---> ViewHolder is called");
@@ -40,6 +40,7 @@ public class DebAdapter extends CursorAdapter {
             descriptionView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
             highTempView = (TextView) view.findViewById(R.id.list_item_high_textview);
             lowTempView = (TextView) view.findViewById(R.id.list_item_low_textview);
+            locationView = (TextView) view.findViewById(R.id.list_item_location);
         }
     }
 
@@ -86,6 +87,10 @@ public class DebAdapter extends CursorAdapter {
                 // Get weather icon
                 viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
                         cursor.getInt(DebListFragment.COL_WEATHER_ID)));
+                //Set the Location to textView
+                String locationCity = cursor.getString(DebListFragment.COL_CITY);
+                viewHolder.locationView.setText(locationCity);
+
                 break;
             }
             case VIEW_LAYOUT_FUTURE: {
@@ -98,13 +103,14 @@ public class DebAdapter extends CursorAdapter {
 
         // Read date from cursor
         long dateInMillis = cursor.getLong(DebListFragment.COL_WEATHER_DATE);
-        Log.d("DEB","DebAdapter ---> date value as in database: " + Long.toString(dateInMillis));
+        Log.d("DEB", "DebAdapter ---> date value as in database: " + Long.toString(dateInMillis));
 
         // Find TextView and set formatted date on it
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
 
         // Read weather forecast from cursor
         String description = cursor.getString(DebListFragment.COL_WEATHER_DESC);
+
 
         // Find TextView and set weather forecast on it
         viewHolder.descriptionView.setText(description);

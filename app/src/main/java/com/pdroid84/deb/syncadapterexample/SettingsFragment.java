@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
+
 /**
  * Created by debashis on 02/08/15.
  */
@@ -64,6 +66,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             // For other preferences, set the summary to the value's simple string representation.
             preference.setSummary(stringValue);
         }
+        //Since Location can change, so call the SyncAdapter to Get data for new location
+        DebSyncAdapter.syncImmediately(getActivity());
         return true;
     }
 

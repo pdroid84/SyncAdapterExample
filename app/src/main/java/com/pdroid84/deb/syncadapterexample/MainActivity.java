@@ -1,6 +1,7 @@
 package com.pdroid84.deb.syncadapterexample;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,12 +12,14 @@ import android.view.MenuItem;
 import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DebListFragment.Callback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("DEB", "MainActivity->onCreate is called");
         setContentView(R.layout.activity_main);
+        // Set elevation to ZERO ensures that the Action Bar belends properly with body of the activity
         getSupportActionBar().setElevation(0f);
         //Load the list fragment
         DebListFragment mDebListFragment =  ((DebListFragment)getSupportFragmentManager()
@@ -48,5 +51,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(Uri dateUri) {
+        Log.d("DEB", "MainActivity->onItemSelected is called");
+        Intent intent = new Intent(this, DetailActivity.class)
+                .setData(dateUri);
+        startActivity(intent);
     }
 }

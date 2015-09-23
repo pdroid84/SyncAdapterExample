@@ -69,8 +69,15 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
                 Cursor mCursor = (Cursor) adapterView.getItemAtPosition(pos);
-                // code to be impleted later for detail fragment
-                Toast.makeText(getActivity(),"Item selected is "+pos,Toast.LENGTH_LONG).show();
+                //This part is to do the needful for detail display
+                if (mCursor != null) {
+                    String locationCity = Utility.getPreferredLocation(getActivity());
+                    Toast.makeText(getActivity(),"Item selected is "+pos+" & Location = "+locationCity,Toast.LENGTH_LONG).show();
+                    ((Callback) getActivity())
+                            .onItemSelected(DebContract.DebWeatherFields.buildWeatherLocationWithDate(
+                                    locationCity, mCursor.getLong(COL_WEATHER_DATE)
+                            ));
+                }
             }
         });
         return parentView;
@@ -89,9 +96,11 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
         // Sort order:  Ascending, by date.
         String sortOrder = DebContract.DebWeatherFields.COLUMN_DATE + " ASC";
 
-        String locationSetting = "Newcastle";
+        //Location is now read from sharedpreference
+        //String locationCity = "Newcastle";
+        String locationCity = Utility.getPreferredLocation(getActivity());
         Uri weatherForLocationUri = DebContract.DebWeatherFields.buildWeatherLocationWithStartDate(
-                locationSetting, System.currentTimeMillis());
+                locationCity, System.currentTimeMillis());
         Log.d("DEB", "DebListFragment ---> weatherForLocationUri: "+ weatherForLocationUri.toString());
         return new CursorLoader(
                 getActivity(),
@@ -117,5 +126,17 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.d("DEB", "DebListFragment ---> onLoaderReset is called");
         mDebAdapter.swapCursor(null);
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
     }
 }

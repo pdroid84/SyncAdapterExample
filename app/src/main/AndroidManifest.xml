@@ -14,11 +14,11 @@
         android:allowBackup="true"
         android:icon="@drawable/art_clear"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/MainActivityTheme">
+            android:theme="@style/MainActivityTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,12 +60,18 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".MainActivity" >  <!-- This is to navigate back to home screen using arrow -->
+            android:parentActivityName=".MainActivity" > <!-- This is to navigate back to home screen using arrow -->
+
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".DetailActivity"
+            android:label="@string/detail_activity_name"
+            android:parentActivityName=".MainActivity" > <!-- This is to navigate back to home screen using arrow -->
         </activity>
     </application>
 
