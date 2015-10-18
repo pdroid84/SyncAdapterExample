@@ -151,8 +151,8 @@ public class DebAdapter extends CursorAdapter {
         return VIEW_COUNT_TOTAL;
     }
 
-    /*
+
     public void setUseTodayLayout(boolean useTodayLayout) {
         mUseTodayLayout = useTodayLayout;
-    }  */
+    }
 }

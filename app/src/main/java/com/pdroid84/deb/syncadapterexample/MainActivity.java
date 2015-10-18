@@ -14,16 +14,39 @@ import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements DebListFragment.Callback {
 
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private boolean mTablet;
+    private String mLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLocation = Utility.getPreferredLocation(this);
         Log.d("DEB", "MainActivity->onCreate is called");
         setContentView(R.layout.activity_main);
-        // Set elevation to ZERO ensures that the Action Bar belends properly with body of the activity
-        getSupportActionBar().setElevation(0f);
-        //Load the list fragment
-        DebListFragment mDebListFragment =  ((DebListFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.fragment_forecast));
+
+        if (findViewById(R.id.weather_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTablet = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.weather_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTablet = false;
+            // Set elevation to ZERO ensures that the Action Bar belends properly with body of the activity
+            getSupportActionBar().setElevation(0f);
+        }
+
+        DebListFragment debListFragment =  ((DebListFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_debList));
+        debListFragment.setUseTodayLayout(!mTablet);
         Log.d("DEB", "MainActivity->about to start the SyncAdapter...");
         DebSyncAdapter.initializeSyncAdapter(this);
     }
@@ -54,10 +77,43 @@ public class MainActivity extends AppCompatActivity implements DebListFragment.C
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        String location = Utility.getPreferredLocation(this);
+        // update the location in our second pane using the fragment manager
+        if (location != null && !location.equals(mLocation)) {
+            DebListFragment dlf = (DebListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_debList);
+            if ( dlf != null ) {
+                dlf.onLocationChanged();
+            }
+            DetailFragment df = (DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+            if ( null != df ) {
+                df.onLocationChanged(location);
+            }
+            mLocation = location;
+        }
+    }
+
+    @Override
     public void onItemSelected(Uri dateUri) {
         Log.d("DEB", "MainActivity->onItemSelected is called");
-        Intent intent = new Intent(this, DetailActivity.class)
-                .setData(dateUri);
-        startActivity(intent);
+        if (mTablet) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.DETAIL_URI, dateUri);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.weather_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .setData(dateUri);
+            startActivity(intent);
+        }
     }
 }

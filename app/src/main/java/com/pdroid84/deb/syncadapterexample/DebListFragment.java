@@ -15,6 +15,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.pdroid84.deb.syncadapterexample.data.DebContract;
+import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
+
 /**
 
  */
@@ -72,7 +74,7 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
                 //This part is to do the needful for detail display
                 if (mCursor != null) {
                     String locationCity = Utility.getPreferredLocation(getActivity());
-                    Toast.makeText(getActivity(),"Item selected is "+pos+" & Location = "+locationCity,Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Item selected is " + pos + " & Location = " + locationCity, Toast.LENGTH_LONG).show();
                     ((Callback) getActivity())
                             .onItemSelected(DebContract.DebWeatherFields.buildWeatherLocationWithDate(
                                     locationCity, mCursor.getLong(COL_WEATHER_DATE)
@@ -101,7 +103,7 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
         String locationCity = Utility.getPreferredLocation(getActivity());
         Uri weatherForLocationUri = DebContract.DebWeatherFields.buildWeatherLocationWithStartDate(
                 locationCity, System.currentTimeMillis());
-        Log.d("DEB", "DebListFragment ---> weatherForLocationUri: "+ weatherForLocationUri.toString());
+        Log.d("DEB", "DebListFragment ---> weatherForLocationUri: " + weatherForLocationUri.toString());
         return new CursorLoader(
                 getActivity(),
                 weatherForLocationUri,
@@ -126,6 +128,23 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.d("DEB", "DebListFragment ---> onLoaderReset is called");
         mDebAdapter.swapCursor(null);
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+        if (mDebAdapter != null) {
+            mDebAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
+    }
+
+    // since we read the location when we create the loader, all we need to do is restart things
+    void onLocationChanged( ) {
+        updateWeather();
+        getLoaderManager().restartLoader(DEB_LOADER, null, this);
+    }
+
+    private void updateWeather() {
+        DebSyncAdapter.syncImmediately(getActivity());
     }
 
     /**

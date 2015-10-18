@@ -1,6 +1,6 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_forecast"
+    android:id="@+id/fragment_debList"
     android:name="com.pdroid84.deb.syncadapterexample.DebListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

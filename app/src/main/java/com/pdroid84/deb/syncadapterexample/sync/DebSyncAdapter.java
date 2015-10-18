@@ -29,6 +29,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.pdroid84.deb.syncadapterexample.ApiData;
 import com.pdroid84.deb.syncadapterexample.MainActivity;
 import com.pdroid84.deb.syncadapterexample.R;
 import com.pdroid84.deb.syncadapterexample.Utility;
@@ -105,12 +106,14 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
+            final String API_KEY = "APPID";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                     .appendQueryParameter(QUERY_PARAM, location)
                     .appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                    .appendQueryParameter(API_KEY, ApiData.getApiKeyValue())
                     .build();
 
             URL url = new URL(builtUri.toString());
