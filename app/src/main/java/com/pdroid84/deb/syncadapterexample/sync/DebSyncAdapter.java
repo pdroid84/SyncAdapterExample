@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.format.Time;
@@ -43,6 +44,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
@@ -72,6 +75,24 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
     private static final int INDEX_MIN_TEMP = 2;
     private static final int INDEX_SHORT_DESC = 3;
 
+    /**
+     * Use android support annotation because using java "enum" is not recommended. Check the following links
+     * https://sites.google.com/a/android.com/tools/tech-docs/support-annotations
+     * http://developer.android.com/reference/android/support/annotation/IntDef.html
+     * To add annotations to your code, first add a dependency to the Support-Annotations library.
+     * In Android Studio, add the dependency using the File > Project Structure > Dependencies menu option
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LOCATION_STATUS_OK, LOCATION_STATUS_SERVER_DOWN, LOCATION_STATUS_SERVER_INVALID, LOCATION_STATUS_UNKNOWN,
+            LOCATION_STATUS_INVALID})
+    public @interface LocationStatus {}
+    public static final int LOCATION_STATUS_OK = 0;
+    public static final int LOCATION_STATUS_SERVER_DOWN = 1;
+    public static final int LOCATION_STATUS_SERVER_INVALID = 2;
+    public static final int LOCATION_STATUS_UNKNOWN = 3;
+    public static final int LOCATION_STATUS_INVALID = 4;
+
+    //Constructor
     public DebSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
         Log.d(LOG_TAG, "DebSyncAdapter --> constructor is called");
@@ -143,6 +164,7 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
+                setLocationStatus(getContext(),LOCATION_STATUS_SERVER_DOWN);
                 return;
             }
             forecastJsonStr = buffer.toString();
@@ -152,9 +174,11 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.e(LOG_TAG, "DebSyncAdapter -->Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
             // to parse it.
+            setLocationStatus(getContext(),LOCATION_STATUS_SERVER_DOWN);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "DebSyncAdapter -->"+e.getMessage(), e);
-                    e.printStackTrace();
+            e.printStackTrace();
+            setLocationStatus(getContext(),LOCATION_STATUS_SERVER_INVALID);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -213,8 +237,26 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
         final String OWM_DESCRIPTION = "main";
         final String OWM_WEATHER_ID = "id";
 
+        //To capture the message code return by the server
+        final String OWM_MESSAGE_CODE = "cod";
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
+            //Have we received an error?
+            if(forecastJson.has(OWM_MESSAGE_CODE)) {
+                int errorCode = forecastJson.getInt(OWM_MESSAGE_CODE);
+                Log.d(LOG_TAG,"DebSyncAdapter --> server error code = " + errorCode);
+                switch(errorCode) {
+                    case HttpURLConnection.HTTP_OK:
+                        break;
+                    case HttpURLConnection.HTTP_NOT_FOUND:
+                        setLocationStatus(getContext(),LOCATION_STATUS_INVALID);
+                        return;
+                    default:
+                        setLocationStatus(getContext(),LOCATION_STATUS_SERVER_DOWN);
+                        return;
+                }
+            }
+
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
             JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
@@ -320,7 +362,8 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
                 //notify that the weather data has been changed
                 notifyWeather();
             }
-
+            Log.d(LOG_TAG,"Sync complete!");
+            setLocationStatus(getContext(),LOCATION_STATUS_OK);
             Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records received from server: " + cVVector.size());
             Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records deleted from database: " + insertCount);
             Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records deleted from database: " + delCount);
@@ -328,6 +371,7 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
+            setLocationStatus(getContext(),LOCATION_STATUS_SERVER_INVALID);
         }
     }
 
@@ -509,5 +553,19 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
     public static void initializeSyncAdapter(Context context) {
         Log.d("DEB", "DebSyncAdapter -->initializeSyncAdapter is called");
         getSyncAccount(context);
+    }
+
+    /**
+     * Store the location status to shared preference. This method should not be called from the UI thread
+     * because  it uses commit to write to shared preference
+     * @param ctx Context to get the PreferenceManager from
+     * @Param locationStatus The IntDef value to set
+     *
+     */
+    static private void setLocationStatus(Context ctx, @LocationStatus int locationStatus) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(ctx.getString(R.string.pref_location_status_key),locationStatus);
+        editor.commit();
     }
 }

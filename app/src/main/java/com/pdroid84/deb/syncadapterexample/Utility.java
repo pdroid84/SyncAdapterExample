@@ -2,8 +2,12 @@ package com.pdroid84.deb.syncadapterexample;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
+
+import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -233,5 +237,43 @@ public class Utility {
             return R.drawable.art_clouds;
         }
         return -1;
+    }
+
+    /**
+     * This will return true if the network is available or about to available
+     *
+     * @param ctx Context used to get the ConnectivityManager
+     * @return the network status
+     */
+    static public boolean isNetworkAvailable (Context ctx) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    /**
+     * This will read the SharedPreference and return the location status
+     *
+     * @param ctx Context used to get the SharedPreference
+     * @return the location status integer type
+     */
+    //Suppress warning for IntDef because we are reading SharedPreference which could be out of the range of location status
+    @SuppressWarnings("ResourceType")
+    static public @DebSyncAdapter.LocationStatus int getLocationStatus (Context ctx) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return sharedPreferences.getInt(ctx.getString(R.string.pref_location_status_key),DebSyncAdapter.LOCATION_STATUS_UNKNOWN);
+    }
+
+    /**
+     * This will reset the location status to unknown (sets DebSyncAdapter.LOCATION_STATUS_UNKOWN
+     *
+     * @param ctx Context used to get the SharedPreference
+     */
+    static public void resetLocationStatus (Context ctx) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(ctx.getString(R.string.pref_location_status_key),DebSyncAdapter.LOCATION_STATUS_UNKNOWN);
+        //Since we are running it on UI thread, so use "apply" instead of "commit"
+        editor.apply();
     }
 }

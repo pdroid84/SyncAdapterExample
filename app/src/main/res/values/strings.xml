@@ -62,6 +62,9 @@
     <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
     <string name="pref_units_imperial" translatable="false">imperial</string>
 
+    <!-- Key name for storing location status in SharedPreference -->
+    <string name="pref_location_status_key" traslatable="false">location-status</string>
+
     <!-- Notification Format -->
     <string name="format_notification">Forecast: <xliff:g id="condition">%1$s</xliff:g> High: <xliff:g id="high">%2$s</xliff:g> Low: <xliff:g id="low">%3$s</xliff:g></string>
 
@@ -75,11 +78,22 @@
     <!-- Pressure format CHAR LIMIT=25] -->
     <string name="format_pressure">Pressure: <xliff:g id="pressure">%1.0f</xliff:g> hPa</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="title_activity_detail">DetailActivity</string>
 
-    <string name="hello_world">Hello world!</string>
+    <!-- No connectivity message -->
+    <string name="empty_weather_data">No weather data available at this moment.</string>
+    <string name="empty_no_connection_msg">Weather data not available. The network is not available to fetch the data.</string>
+    <string name="empty_server_down">Weather data not available. The server is not returning data.</string>
+    <string name="empty_server_error">Weather data not available. The server is not returning valid weather data.</string>
+    <string name="empty_invalid_location">Weather data not available. The location in settings is not recognised by the server.</string>
+
+    <!-- Strings used when displaying the state of the Location in settings -->
+    <string name="pref_location_error_description">Invalid Location (<xliff:g id="location_setting">%1$s</xliff:g>)"</string>
+    <string name="pref_location_unknown_description">Validating Location... (<xliff:g id="location_setting">%1$s</xliff:g>)"</string>
+
+
 
 </resources>

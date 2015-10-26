@@ -1,8 +1,10 @@
 package com.pdroid84.deb.syncadapterexample;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.pdroid84.deb.syncadapterexample.data.DebContract;
 import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
@@ -20,7 +23,8 @@ import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
 /**
 
  */
-public class DebListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DebListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private DebAdapter mDebAdapter;
     private ListView mListView;
@@ -64,6 +68,8 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
 
         //Get a reference to the ListView
         mListView = (ListView) parentView.findViewById(R.id.listview_forecast);
+        //Set the empty view with list view so that it's data appears only when the list is empty
+        mListView.setEmptyView(parentView.findViewById(R.id.empty_list_text_view));
 
         //Attach the adapter to the ListView
         mListView.setAdapter(mDebAdapter);
@@ -90,6 +96,22 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
         Log.d("DEB", "DebListFragment ---> onActivityCreated is called");
         getLoaderManager().initLoader(DEB_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        //Register the SharedPreference Listner
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        //Unregister the SharedPreference Listener
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     @Override
@@ -122,6 +144,7 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
             // to, do so now.
             mListView.smoothScrollToPosition(mPosition);
         }
+        updateNoDataMessage();
     }
 
     @Override
@@ -139,12 +162,54 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
 
     // since we read the location when we create the loader, all we need to do is restart things
     void onLocationChanged( ) {
+        Log.d("DEB", "DebListFragment ---> onLocationChanged is called");
         updateWeather();
         getLoaderManager().restartLoader(DEB_LOADER, null, this);
     }
 
     private void updateWeather() {
+        Log.d("DEB", "DebListFragment ---> updateWeather is called");
         DebSyncAdapter.syncImmediately(getActivity());
+    }
+
+    /**
+     * Update the empty list view with user friendly message when there is no network available and
+     * the application cannot fetch the data or the network is available but no data returned from the server
+     */
+    private void updateNoDataMessage() {
+        Log.d("DEB", "DebListFragment ---> updateNoDataMessage is called");
+        if(mDebAdapter.getCount() == 0) {
+            TextView mTextView = (TextView) getView().findViewById(R.id.empty_list_text_view);
+            if (mTextView != null) {
+                //the cursor is empty, no data? Invalid location
+                int msg = R.string.empty_weather_data;
+                @DebSyncAdapter.LocationStatus int location = Utility.getLocationStatus(getActivity());
+                switch (location) {
+                    case DebSyncAdapter.LOCATION_STATUS_SERVER_DOWN:
+                        msg = R.string.empty_server_down;
+                        break;
+                    case DebSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
+                        msg = R.string.empty_server_error;
+                        break;
+                    case DebSyncAdapter.LOCATION_STATUS_INVALID:
+                        msg = R.string.empty_invalid_location;
+                        break;
+                    default:
+                        if (!Utility.isNetworkAvailable(getActivity())) {
+                            msg = R.string.empty_no_connection_msg;
+                        }
+                }
+                mTextView.setText(msg);
+            }
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d("DEB", "DebListFragment ---> onSharedPreferenceChanged is called");
+        if(key.equals(getString(R.string.pref_location_status_key))) {
+            updateNoDataMessage();
+        }
     }
 
     /**
