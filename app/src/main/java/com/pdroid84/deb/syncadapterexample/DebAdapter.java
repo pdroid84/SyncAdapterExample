@@ -114,20 +114,32 @@ public class DebAdapter extends CursorAdapter {
 
         // Find TextView and set weather forecast on it
         viewHolder.descriptionView.setText(description);
+        //For accessibility add contentDescription
+        viewHolder.descriptionView.setContentDescription(context.getString(R.string.a11y_forecast,description));
 
         // For accessibility, add a content description to the icon field
-        viewHolder.iconView.setContentDescription(description);
+        //For accessibility, we don't want a content description for the icon field
+        // because the information is repeated in the description view and the icon
+        // is not individually selectable. So commenting it out
+        //viewHolder.iconView.setContentDescription(description);
 
         // Read user preference for metric or imperial temperature units
-        boolean isMetric = Utility.isMetric(context);
+        //Found that we are not using this, so commenting it out
+        //boolean isMetric = Utility.isMetric(context);
 
         // Read high temperature from cursor
         double high = cursor.getDouble(DebListFragment.COL_WEATHER_MAX_TEMP);
         viewHolder.highTempView.setText(Utility.formatTemperature(context, high));
+        //For accessibility add contentDescription
+        viewHolder.highTempView.setContentDescription(context.getString(R.string.a11y_high_temp,
+                Utility.formatTemperature(context,high)));
 
         // Read low temperature from cursor
         double low = cursor.getDouble(DebListFragment.COL_WEATHER_MIN_TEMP);
         viewHolder.lowTempView.setText(Utility.formatTemperature(context, low));
+        //For accessibility add contentDescription
+        viewHolder.lowTempView.setContentDescription(context.getString(R.string.a11y_low_temp,
+                Utility.formatTemperature(context,low)));
     }
 
     @Override
