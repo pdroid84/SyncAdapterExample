@@ -10,6 +10,8 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 /**
  * Created by debashis on 26/07/15.
  */
@@ -82,24 +84,41 @@ public class DebAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         int viewType = getItemViewType(cursor.getPosition());
+        //Use Glide library for image load. So define the following two variables
+        int fallbackIconId;
+        int weatherId = cursor.getInt(DebListFragment.COL_WEATHER_ID);
         switch (viewType) {
             case VIEW_LAYOUT_TODAY: {
                 // Get weather icon
-                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
-                        cursor.getInt(DebListFragment.COL_WEATHER_ID)));
+                //Now use Glide library for image load. So commenting it out.
+                //viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
+                //        cursor.getInt(DebListFragment.COL_WEATHER_ID)));
+                //USe Glide
+                fallbackIconId = Utility.getArtResourceForWeatherCondition(weatherId);
                 //Set the Location to textView
                 String locationCity = cursor.getString(DebListFragment.COL_CITY);
                 viewHolder.locationView.setText(locationCity);
 
                 break;
             }
-            case VIEW_LAYOUT_FUTURE: {
+           //Anything not Today is basically future date, so changing to "default"
+            //case VIEW_LAYOUT_FUTURE: {
+            default: {
                 // Get weather icon
-                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
-                        cursor.getInt(DebListFragment.COL_WEATHER_ID)));
+                //Now use Glide library for image load. So commenting it out.
+                //viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
+                //        cursor.getInt(DebListFragment.COL_WEATHER_ID)));
+                //USe Glide
+                fallbackIconId = Utility.getArtResourceForWeatherCondition(weatherId);
                 break;
             }
         }
+        //Now use Glide to load image
+        Glide.with(context)
+                .load(Utility.getArtUrlForWeatherCondition(context, weatherId))
+                .error(fallbackIconId)
+                .crossFade()
+                .into(viewHolder.iconView);
 
         // Read date from cursor
         long dateInMillis = cursor.getLong(DebListFragment.COL_WEATHER_DATE);

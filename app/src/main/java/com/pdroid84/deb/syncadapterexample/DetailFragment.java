@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.pdroid84.deb.syncadapterexample.data.DebContract;
 
 
@@ -171,8 +172,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             // Read weather condition ID from cursor
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-            // Use weather art image
-            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+            // Use weather art image. Commenting as will use Glide library
+            //mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+
+            //Glide is a library which handle image loading
+            Glide.with(this)
+                    .load(Utility.getArtUrlForWeatherCondition(getActivity(),weatherId))
+                    .error(Utility.getArtResourceForWeatherCondition(weatherId)) /* This is fallback */
+                    .crossFade()
+                    .into(mIconView);
 
             // Read date from cursor and update views for day of week and date
             long date = data.getLong(COL_WEATHER_DATE);
