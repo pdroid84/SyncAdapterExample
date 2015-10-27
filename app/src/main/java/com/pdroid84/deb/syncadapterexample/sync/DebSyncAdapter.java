@@ -240,6 +240,8 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
         final String OWM_DESCRIPTION = "main";
         final String OWM_WEATHER_ID = "id";
 
+        String userLocation = Utility.getPreferredLocation(getContext());
+
         //To capture the message code return by the server
         final String OWM_MESSAGE_CODE = "cod";
         try {
@@ -330,6 +332,7 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 ContentValues weatherValues = new ContentValues();
 
+                weatherValues.put(DebContract.DebWeatherFields.COLUMN_USER_LOCATION,userLocation);
                 weatherValues.put(DebContract.DebWeatherFields.COLUMN_CITY,cityName);
                 weatherValues.put(DebContract.DebWeatherFields.COLUMN_DATE, dateTime);
                 weatherValues.put(DebContract.DebWeatherFields.COLUMN_HUMIDITY, humidity);
@@ -345,8 +348,8 @@ public class DebSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             //Delete records from table for the location before inserting to table to avoid duplicates
             Uri weatherLocationDelUri = DebContract.DebWeatherFields.CONTENT_URI;
-            int delRows = getContext().getContentResolver().delete(weatherLocationDelUri,DebContract.DebWeatherFields.COLUMN_CITY + "= ?",
-                    new String[]{cityName});
+            int delRows = getContext().getContentResolver().delete(weatherLocationDelUri,DebContract.DebWeatherFields.COLUMN_USER_LOCATION + "= ?",
+                    new String[]{userLocation});
             Log.d(LOG_TAG, "DebSyncAdapter-->getWeatherDataFromJson--> total records deleted from location "+cityName+" = " +delRows);
 
             int insertCount = 0;

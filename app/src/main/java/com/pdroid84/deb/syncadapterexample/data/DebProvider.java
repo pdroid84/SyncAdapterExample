@@ -36,16 +36,16 @@ public class DebProvider extends ContentProvider {
 
     //prepare the city = ?
     private static final String sCitySelection =
-            DebContract.DebWeatherFields.COLUMN_CITY + " = ? ";
+            DebContract.DebWeatherFields.COLUMN_USER_LOCATION + " = ? ";
 
     //prepare the city = ? AND date >= ?
     private static final String sCityWithStartDateSelection =
-            DebContract.DebWeatherFields.COLUMN_CITY + " = ? AND " +
+            DebContract.DebWeatherFields.COLUMN_USER_LOCATION + " = ? AND " +
                     DebContract.DebWeatherFields.COLUMN_DATE + " >= ? ";
 
     //prepare the city = ? AND date = ?
     private static final String sCityAndDateSelection =
-            DebContract.DebWeatherFields.COLUMN_CITY + " = ? AND " +
+            DebContract.DebWeatherFields.COLUMN_USER_LOCATION + " = ? AND " +
                     DebContract.DebWeatherFields.COLUMN_DATE + " = ? ";
 
     private Cursor getWeatherByCity(Uri uri, String[] projection, String sortOrder) {

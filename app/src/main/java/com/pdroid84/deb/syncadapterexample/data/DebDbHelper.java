@@ -13,7 +13,7 @@ import com.pdroid84.deb.syncadapterexample.data.DebContract.DebWeatherFields;
 public class DebDbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     static final String DATABASE_NAME = "weather.db";
 
@@ -33,6 +33,7 @@ public class DebDbHelper extends SQLiteOpenHelper {
                 // for a certain date and all dates *following*, so the forecast data
                 // should be sorted accordingly.
                 DebWeatherFields._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                DebWeatherFields.COLUMN_USER_LOCATION + " TEXT NOT NULL, " +
                 DebWeatherFields.COLUMN_CITY + " TEXT NOT NULL, " +
                 DebWeatherFields.COLUMN_DATE + " INTEGER NOT NULL, " +
                 DebWeatherFields.COLUMN_WEATHER_ID + " INTEGER NOT NULL," +

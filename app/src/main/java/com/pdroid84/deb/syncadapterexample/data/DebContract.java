@@ -56,7 +56,12 @@ public class DebContract {
 
         public static final String TABLE_NAME = "weather";
 
-        //Weather Location
+        //Adding this new field to store the user provided location
+        //This will ensure the correct value (upper/lower case or pin code) is used
+        //while querying the database
+        public static final String COLUMN_USER_LOCATION = "loc";
+
+        //Weather Location as received from the OpenWeather
         public static final String COLUMN_CITY = "city";
 
         // Date, stored as long in milliseconds since the epoch
