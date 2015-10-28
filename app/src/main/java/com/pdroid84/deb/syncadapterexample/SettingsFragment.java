@@ -32,6 +32,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         // updated when the preference changes.
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_art_pack_key)));
     }
 
     // Registers a shared preference change listener that gets notified when preferences change
@@ -117,6 +118,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         } else if ( key.equals(getString(R.string.pref_units_key)) ) {
             // units have changed. update lists of weather entries accordingly
             getActivity().getContentResolver().notifyChange(DebContract.DebWeatherFields.CONTENT_URI, null);
+        } else if (key.equals(getString(R.string.pref_art_pack_key))) {
+            //art pack got changed, so update that in the lsit
+            getActivity().getContentResolver().notifyChange(DebContract.DebWeatherFields.CONTENT_URI,null);
         }
     }
 }
