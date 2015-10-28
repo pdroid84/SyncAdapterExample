@@ -80,7 +80,8 @@ public class DebListFragment extends Fragment implements LoaderManager.LoaderCal
                 //This part is to do the needful for detail display
                 if (mCursor != null) {
                     String locationCity = Utility.getPreferredLocation(getActivity());
-                    Toast.makeText(getActivity(), "Item selected is " + pos + " & Location = " + locationCity, Toast.LENGTH_LONG).show();
+                    //Commenting the Toast
+                    //Toast.makeText(getActivity(), "Item selected is " + pos + " & Location = " + locationCity, Toast.LENGTH_LONG).show();
                     ((Callback) getActivity())
                             .onItemSelected(DebContract.DebWeatherFields.buildWeatherLocationWithDate(
                                     locationCity, mCursor.getLong(COL_WEATHER_DATE)
