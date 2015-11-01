@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 /**
- * Created by debashis on 26/07/15.
+ * Created on 26/07/15.
  */
 public class DebAdapter extends CursorAdapter {
 

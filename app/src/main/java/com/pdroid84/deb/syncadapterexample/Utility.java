@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by debashis on 12/07/15.
+ * Created on 12/07/15.
  */
 public class Utility {
     public static String getPreferredLocation(Context context) {

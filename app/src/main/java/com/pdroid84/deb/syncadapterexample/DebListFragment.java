@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.pdroid84.deb.syncadapterexample.data.DebContract;
 import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
 

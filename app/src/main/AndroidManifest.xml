@@ -7,6 +7,19 @@
 
     <!-- Need the permission to check the network connectivity -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- Permission required for Google Could Messaging -->
+    <!-- To ensure that application cannot be installed on environment where it cannot run. Always do when GCM feature is crucial -->
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="23" />
+    <!-- register the application to GCM to receive message -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <!-- To ensure application can keep the processer from sleep when a message is received -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Define a permission to prevent other application from registering and receiving message -->
+    <permission android:name="com.pdroid84.deb.syncadapterexample.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <!-- use the above defined permission -->
+    <uses-permission android:name="com.pdroid84.deb.syncadapterexample.permission.C2D_MESSAGE" />
 
     <!-- Permissions required by the sync adapter -->
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
@@ -76,6 +89,43 @@
             android:label="@string/detail_activity_name"
             android:parentActivityName=".MainActivity" > <!-- This is to navigate back to home screen using arrow -->
         </activity>
+
+        <!-- Declare the GCM receiver -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.pdroid84.deb.syncadapterexample" />
+            </intent-filter>
+        </receiver>
+
+        <!-- [START gcm_listener - to receive and process message] -->
+        <service
+            android:name="com.pdroid84.deb.syncadapterexample.gcm.DebGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <!-- [END gcm_listener] -->
+
+        <!--START instanceId_listener to handle creation, rotation and updating the registration key -->
+        <service
+            android:name="com.pdroid84.deb.syncadapterexample.gcm.DebInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+        <!-- [END instanceId_listener] -->
+        <!-- Start the service for token registration -->
+        <service
+            android:name="com.pdroid84.deb.syncadapterexample.gcm.DebRegistrationIntentService"
+            android:exported="false">
+        </service>
+
     </application>
 
 </manifest>

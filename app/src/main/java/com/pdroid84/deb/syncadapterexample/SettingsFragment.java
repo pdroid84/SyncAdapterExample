@@ -18,7 +18,7 @@ import com.pdroid84.deb.syncadapterexample.data.DebContract;
 import com.pdroid84.deb.syncadapterexample.sync.DebSyncAdapter;
 
 /**
- * Created by debashis on 02/08/15.
+ * Created on 02/08/15.
  */
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener,
         SharedPreferences.OnSharedPreferenceChangeListener {

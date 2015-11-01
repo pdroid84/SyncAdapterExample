@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 /**
- * Created by debashispaul on 25/10/2015.
  * This class is for custom view (used for location)
  * The class name has to be same as custom view name. Refer the following for more details
  * http://developer.android.com/training/custom-views/create-view.html#customattr
