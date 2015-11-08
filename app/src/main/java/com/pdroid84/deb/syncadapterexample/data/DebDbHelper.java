@@ -15,7 +15,7 @@ public class DebDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 3;
 
-    static final String DATABASE_NAME = "weather.db";
+    public static final String DATABASE_NAME = "weather.db";
 
     public DebDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

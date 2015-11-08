@@ -1,6 +1,5 @@
 package com.pdroid84.deb.syncadapterexample.data;
 
-import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
